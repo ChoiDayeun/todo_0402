@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Todo List</title>
+</head>
+<body>
+
+<h1>Todo List</h1>
+<div id="todo-list-container"></div>
+<form id="todo-form">
+  <label for="todo-title">할 일:</label>
+  <input type="text" id="todo-title" placeholder="할 일을 입력하세요">
+  <label for="todo-deadline">마감일:</label>
+  <input type="datetime-local" id="todo-deadline">
+  <button type="submit">추가</button>
+</form>
+
+<script type="module">
+  import { TodoList } from './TodoList.js';
+
+  const todoListContainer = document.getElementById('todo-list-container');
+  const todoForm = document.getElementById('todo-form');
+  const todoTitleInput = document.getElementById('todo-title');
+  const todoDeadlineInput = document.getElementById('todo-deadline');
+
+  const todoList = new TodoList('My Todo List');
+
+  function renderTodoList() {
+    todoListContainer.innerHTML = '';
+    for (const date in todoList.items) {
+      const items = todoList.items[date];
+      const dateHeader = document.createElement('h2');
+      dateHeader.textContent = date;
+      todoListContainer.appendChild(dateHeader);
+
+      const ul = document.createElement('ul');
+      items.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = `${item.title} - 마감일: ${item.deadline.toLocaleString()}`;
+        ul.appendChild(li);
+      });
+
+      todoListContainer.appendChild(ul);
+    }
+  }
+
+  todoForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+    const title = todoTitleInput.value.trim();
+    const deadline = new Date(todoDeadlineInput.value);
+    if (title === '' || isNaN(deadline)) {
+      alert('할 일과 마감일을 입력하세요.');
+      return;
+    }
+    todoList.addItem(title, deadline);
+    renderTodoList();
+    todoTitleInput.value = '';
+    todoDeadlineInput.value = '';
+  });
+
+  renderTodoList();
+</script>
+
+</body>
+</html>
